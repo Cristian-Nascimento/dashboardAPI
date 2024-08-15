@@ -14,11 +14,12 @@ export const getTransactionsUseCase = async ({ query, select, cursor }) => {
     }
     delete query.start
     delete query.end
+    delete cursor.limit
+    cursor.sort = { date: 1 }
 
     const user = await User.findById(query.userId)
     if (!user) throw new Error('User not found')
 
-    cursor.sort = { date: -1 }
     const count = await Transaction.count(query)
     const rows = await Transaction.find(query, select, cursor)
 
