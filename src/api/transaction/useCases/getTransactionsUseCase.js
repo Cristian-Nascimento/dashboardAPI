@@ -4,8 +4,6 @@ import { checkIsValidDataQuery } from '../utils/checkIsValidDataQuery'
 
 export const getTransactionsUseCase = async ({ query, select, cursor }) => {
   try {
-    let sumInput, sumOutput
-
     if (checkIsValidDataQuery(query)) {
       query.date = {
         $gte: query.start,
@@ -23,10 +21,8 @@ export const getTransactionsUseCase = async ({ query, select, cursor }) => {
     const count = await Transaction.count(query)
     const rows = await Transaction.find(query, select, cursor)
 
-    if (rows.length > 0) {
-      sumInput = rows.reduce((sum, t) => t.type === 'Entrada' ? sum + t.amount : sum, 0)
-      sumOutput = rows.reduce((sum, t) => t.type === 'Saída' ? sum + t.amount : sum, 0)
-    }
+    const sumInput = rows.reduce((sum, t) => t.type === 'Entrada' ? sum + t.amount : sum, 0)
+    const sumOutput = rows.reduce((sum, t) => t.type === 'Saída' ? sum + t.amount : sum, 0)
 
     return {
       count,
